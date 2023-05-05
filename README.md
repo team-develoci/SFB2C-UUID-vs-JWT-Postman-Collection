@@ -160,7 +160,7 @@ Once you have set the environment variables, you can start using the pre-configu
 
 ## How to use this Collection
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/dTcip5-__kM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[Watch here](https://www.develoci.com/content/update-salesforce-commerce-cloud-token) a full explanation about how to set and use this Postman Collection.
 
 ## Useful Links
 
