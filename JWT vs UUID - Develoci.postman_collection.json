@@ -1,0 +1,778 @@
+{
+	"info": {
+		"_postman_id": "38ff6991-26f7-4db0-8dac-326d1429ee5b",
+		"name": "JWT vs UUID - Develoci",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12637256"
+	},
+	"item": [
+		{
+			"name": "Authorization UUID",
+			"item": [
+				{
+					"name": "Get User Shop Token UUID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var tokenData = JSON.parse(responseBody);\r",
+									"\r",
+									"if(tokenData.access_token!==null && tokenData.token_type!==null ){\r",
+									"    postman.setEnvironmentVariable(\"access_token_shop\", tokenData.access_token);\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded"
+							},
+							{
+								"key": "x-dw-client-id",
+								"type": "text",
+								"value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+								"disabled": true
+							},
+							{
+								"description": "myBMUser:MyBMPass:ClientPass base64",
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{BasicBMUser}}"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "urn:demandware:params:oauth:grant-type:client-id:dwsid:dwsecuretoken",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://{{sfccDomain}}/dw/oauth2/access_token?client_id={{client_id}}",
+							"protocol": "https",
+							"host": [
+								"{{sfccDomain}}"
+							],
+							"path": [
+								"dw",
+								"oauth2",
+								"access_token"
+							],
+							"query": [
+								{
+									"key": "client_id",
+									"value": "{{client_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Data OAuth Token UUID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var tokenData = JSON.parse(responseBody);",
+									"",
+									"if(tokenData.access_token!==null && tokenData.token_type!==null ){",
+									"    postman.setEnvironmentVariable(\"access_token_data\", tokenData.access_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{client_id}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "showPassword",
+									"value": true,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://account.demandware.com/dw/oauth2/access_token",
+							"protocol": "https",
+							"host": [
+								"account",
+								"demandware",
+								"com"
+							],
+							"path": [
+								"dw",
+								"oauth2",
+								"access_token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authorization JWT Key Pair SFB2C Handled",
+			"item": [
+				{
+					"name": "Get JWT token for guest customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var data = JSON.parse(responseBody);",
+									"pm.environment.set('access_token_shop', postman.getResponseHeader(\"Authorization\").replace('Bearer ', ''))",
+									"if (responseCode.code !== 200) {",
+									"    console.log(responseBody);",
+									"} "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-dw-client-id",
+								"value": "{{client_id}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"type\": \"guest\"\n}"
+						},
+						"url": {
+							"raw": "https://{{sfccStorefrontDomain}}/s/{{site_id}}/dw/shop/v23_1/customers/auth",
+							"protocol": "https",
+							"host": [
+								"{{sfccStorefrontDomain}}"
+							],
+							"path": [
+								"s",
+								"{{site_id}}",
+								"dw",
+								"shop",
+								"v23_1",
+								"customers",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get JWT token for registered customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var data = JSON.parse(responseBody);",
+									"pm.environment.set(\"access_token_shop\", postman.getResponseHeader(\"Authorization\").replace('Bearer ', ''));",
+									"if (responseCode.code !== 200) {",
+									"    console.log(responseBody);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "ccassio1977@gmail.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "@PICl1ent",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-dw-client-id",
+								"value": "{{client_id}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"type\": \"credentials\"\n}"
+						},
+						"url": {
+							"raw": "https://{{sfccStorefrontDomain}}/s/{{site_id}}/dw/shop/v23_1/customers/auth",
+							"protocol": "https",
+							"host": [
+								"{{sfccStorefrontDomain}}"
+							],
+							"path": [
+								"s",
+								"{{site_id}}",
+								"dw",
+								"shop",
+								"v23_1",
+								"customers",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Token OAuth2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"access_token_data\", pm.response.json().access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://account.demandware.com/dwsso/oauth2/access_token?client_id={{client_id}}&client_secret={{client_secret}}",
+							"protocol": "https",
+							"host": [
+								"account",
+								"demandware",
+								"com"
+							],
+							"path": [
+								"dwsso",
+								"oauth2",
+								"access_token"
+							],
+							"query": [
+								{
+									"key": "client_id",
+									"value": "{{client_id}}"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authorization JWT Key Pair - External Handled",
+			"item": [
+				{
+					"name": "JWT - Data API",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Getting client secret fom environment\r",
+									"var jwtPrivateKey = pm.environment.get('key_perm');\r",
+									"\r",
+									"// Set headers for JWT\r",
+									"var header = {\r",
+									"    'alg': 'RS256',\r",
+									"    'typ': 'JWT'\r",
+									"};\r",
+									"\r",
+									"// Set expiration date to 30 minutes in the future\r",
+									"const currentTime = Math.floor(Date.now() / 1000);\r",
+									"const expirationDate = currentTime + (30 * 60);\r",
+									"\r",
+									"// Set payload\r",
+									"const payload = {\r",
+									"    iss: pm.environment.get('client_id'),\r",
+									"    sub: pm.environment.get('client_id'),\r",
+									"    aud: 'https://account.demandware.com:443/dwsso/oauth2/access_token',\r",
+									"    exp: expirationDate\r",
+									"};\r",
+									"\r",
+									"// From now on, the solution is edapted from https://gist.github.com/aroemen/91d4368cf5714f5d32ea5bdb53d221f9\r",
+									"function generateJwt() {\r",
+									"    eval(pm.globals.get('jsrsasign-js')); // import javascript jsrsasign\r",
+									"\r",
+									"    var sHeader = JSON.stringify(header);\r",
+									"    var sPayload = JSON.stringify(payload);\r",
+									"\r",
+									"    var signedToken = KJUR.jws.JWS.sign(header.alg, sHeader, sPayload, jwtPrivateKey);\r",
+									"\r",
+									"    pm.environment.set('client_assertion', signedToken);\r",
+									"    // console.log('jwt', signedToken);\r",
+									"}\r",
+									"\r",
+									"var navigator = {}; // fake a navigator object for the lib\r",
+									"var window = {}; // fake a window object for the lib\r",
+									"\r",
+									"if (pm.globals.has('jsrsasign-js')) {\r",
+									"    generateJwt();\r",
+									"} else {\r",
+									"    pm.sendRequest('https://kjur.github.io/jsrsasign/jsrsasign-all-min.js', function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log(err);\r",
+									"        } else {\r",
+									"            pm.globals.set('jsrsasign-js', res.text());\r",
+									"            generateJwt();\r",
+									"        }\r",
+									"    });\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();\r",
+									"if (response && response.access_token) {\r",
+									"    pm.environment.set('access_token_data', response.access_token);\r",
+									"} else {\r",
+									"    console.log(\"Error!\", JSON.stringify(response));\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_assertion_type",
+									"value": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_assertion",
+									"value": "{{client_assertion}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://account.demandware.com/dwsso/oauth2/access_token?client_id={{client_id}}",
+							"protocol": "https",
+							"host": [
+								"account",
+								"demandware",
+								"com"
+							],
+							"path": [
+								"dwsso",
+								"oauth2",
+								"access_token"
+							],
+							"query": [
+								{
+									"key": "client_id",
+									"value": "{{client_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "JWT - Shop API",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"access_token_shop\", postman.getResponseHeader(\"authorization\").replace('Bearer ', ''));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-dw-client-id",
+								"value": "{{client_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{basicAuthorization}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"credentials\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{sfccDomain}}/s/{{site_id}}/dw/shop/v23_1/customers/auth",
+							"protocol": "https",
+							"host": [
+								"{{sfccDomain}}"
+							],
+							"path": [
+								"s",
+								"{{site_id}}",
+								"dw",
+								"shop",
+								"v23_1",
+								"customers",
+								"auth"
+							]
+						},
+						"description": "Fetches an anonymous JWT session token."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "SHOP API examples",
+			"item": [
+				{
+					"name": "Get Order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_shop}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{sfccStorefrontDomain}}/s/{{site_id}}/dw/shop/v23_1/orders/{{order_no}}?client_id={{client_id}}",
+							"protocol": "https",
+							"host": [
+								"{{sfccStorefrontDomain}}"
+							],
+							"path": [
+								"s",
+								"{{site_id}}",
+								"dw",
+								"shop",
+								"v23_1",
+								"orders",
+								"{{order_no}}"
+							],
+							"query": [
+								{
+									"key": "client_id",
+									"value": "{{client_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_shop}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{sfccStorefrontDomain}}/s/{{site_id}}/dw/shop/v23_2/products/{{product_id}}?client_id={{client_id}}",
+							"protocol": "https",
+							"host": [
+								"{{sfccStorefrontDomain}}"
+							],
+							"path": [
+								"s",
+								"{{site_id}}",
+								"dw",
+								"shop",
+								"v23_2",
+								"products",
+								"{{product_id}}"
+							],
+							"query": [
+								{
+									"key": "client_id",
+									"value": "{{client_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_shop}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"order_no\": \"B00013601\"\r\n}"
+						},
+						"url": {
+							"raw": "https://{{sfccStorefrontDomain}}/s/{{site_id}}/dw/shop/v23_1/orders/{{order_no}}?client_id={{client_id}}",
+							"protocol": "https",
+							"host": [
+								"{{sfccStorefrontDomain}}"
+							],
+							"path": [
+								"s",
+								"{{site_id}}",
+								"dw",
+								"shop",
+								"v23_1",
+								"orders",
+								"{{order_no}}"
+							],
+							"query": [
+								{
+									"key": "client_id",
+									"value": "{{client_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DATA API example",
+			"item": [
+				{
+					"name": "Product Inventory Record",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_data}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://{{sfccDomain}}/s/-/dw/data/v23_2/inventory_lists/{{inventory_id}}/product_inventory_records/{{product_id}}",
+							"protocol": "https",
+							"host": [
+								"{{sfccDomain}}"
+							],
+							"path": [
+								"s",
+								"-",
+								"dw",
+								"data",
+								"v23_2",
+								"inventory_lists",
+								"{{inventory_id}}",
+								"product_inventory_records",
+								"{{product_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Product Inventory Record",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_data}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"allocation\": {\r\n        \"amount\": 101\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{sfccDomain}}/s/-/dw/data/v23_1/inventory_lists/{{inventory_id}}/product_inventory_records/{{product_id}}",
+							"protocol": "https",
+							"host": [
+								"{{sfccDomain}}"
+							],
+							"path": [
+								"s",
+								"-",
+								"dw",
+								"data",
+								"v23_1",
+								"inventory_lists",
+								"{{inventory_id}}",
+								"product_inventory_records",
+								"{{product_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
