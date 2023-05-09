@@ -75,7 +75,7 @@ SHOP API:
 SHOP API:
 ```json
 {
-	"client_id": "a290d164-39c3-4b43-98d8-112a365ae191",
+	"client_id": "<client_id>",
 	"resources": [
 		{
 			"resource_id": "/inventory_lists/*/product_inventory_records",
